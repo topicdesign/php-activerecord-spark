@@ -15,14 +15,14 @@ class PHPActiveRecord {
 
         // Include the CodeIgniter database config file
         // Is the config file in the environment folder?
-	if ( ! defined('ENVIRONMENT') OR ! file_exists($file_path = APPPATH.'config/'.ENVIRONMENT.'/database.php'))
-	{
-		if ( ! file_exists($file_path = APPPATH.'config/database.php'))
-		{
-			show_error('PHPActiveRecord: The configuration file database.php does not exist.');
-		}
-	}
-	require($file_path);
+        if ( ! defined('ENVIRONMENT') OR ! file_exists($file_path = APPPATH.'config/'.ENVIRONMENT.'/database.php'))
+        {
+            if ( ! file_exists($file_path = APPPATH.'config/database.php'))
+            {
+                show_error('PHPActiveRecord: The configuration file database.php does not exist.');
+            }
+        }
+        require($file_path);
 
         // Include the ActiveRecord bootstrapper
         require_once $spark_path.'vendor/php-activerecord/ActiveRecord.php';
@@ -46,8 +46,11 @@ class PHPActiveRecord {
             // Initialize PHPActiveRecord
             ActiveRecord\Config::initialize(function ($cfg) use ($connections, $active_group) {
                 $cfg->set_model_directory(APPPATH.'models/');
-                $cfg->set_connections($connections);
-
+                try {
+                    $cfg->set_connections($connections);
+                } catch(Exception $e) {
+                    show_error('PHPActiveRecord: Unable to initialize connection.');
+                }
                 // This connection is the default for all models
                 $cfg->set_default_connection($active_group);
             });
