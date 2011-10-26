@@ -57,7 +57,7 @@ class PHPActiveRecord {
 
         }
 
-        // extend activerecord_autoload() to allow models in /third_party/models/
+        // extend activerecord_autoload() to allow models in loaded packages
         spl_autoload_register('extended_activerecord_autoload',false,PHP_ACTIVERECORD_AUTOLOAD_PREPEND);
     }
 }
@@ -66,18 +66,14 @@ class PHPActiveRecord {
 
 function extended_activerecord_autoload($class_name)
 {
-    $package_dir = APPPATH.'third_party/';
-    $files = scandir($package_dir);
-    foreach ($files as $file)
-    {
-        if ($file == '.' OR $file == '..')
-            continue;
-        if (is_dir($package_dir.$file) && is_dir($package_dir.$file.'/models/'))
-            $paths[] = $package_dir.$file.'/models/';
-    }
+    $CI = get_instance();
+    $paths = $CI->load->get_package_paths();
+    array_pop($paths); // remove 'application/'
     foreach ($paths as $path)
     {
-        $root = realpath($path);
+        $root = realpath($path . '/models/');
+        if ( ! $root)
+            continue;
 
         if (($namespaces = ActiveRecord\get_namespaces($class_name)))
         {
@@ -92,7 +88,7 @@ function extended_activerecord_autoload($class_name)
 
         $file = "$root/$class_name.php";
     }
-    if (file_exists($file))
+    if (isset($file) && file_exists($file))
         require $file;
 }
 
