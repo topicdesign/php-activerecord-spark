@@ -75,23 +75,14 @@ function extended_activerecord_autoload($class_name)
         if ( ! $root)
             continue;
 
-        if (($namespaces = ActiveRecord\get_namespaces($class_name)))
-        {
+        if ($namespaces = ActiveRecord\get_namespaces($class_name))
             $class_name = array_pop($namespaces);
-            $directories = array();
-
-            foreach ($namespaces as $directory)
-                $directories[] = $directory;
-
-            $root .= DIRECTORY_SEPARATOR . implode($directories, DIRECTORY_SEPARATOR);
-        }
 
         $file = "$root/$class_name.php";
     }
     if (isset($file) && file_exists($file))
         require $file;
 }
-
 
 /* End of file PHPActiveRecord.php */
 /* Location: ./sparks/php-activerecord/<version>/libraries/PHPActiveRecord.php */
