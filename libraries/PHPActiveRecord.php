@@ -79,9 +79,11 @@ function extended_activerecord_autoload($class_name)
             $class_name = array_pop($namespaces);
 
         $file = "$root/$class_name.php";
+        if (isset($file) && file_exists($file)) {
+            require $file;
+            return;
+        }
     }
-    if (isset($file) && file_exists($file))
-        require $file;
 }
 
 /* End of file PHPActiveRecord.php */
